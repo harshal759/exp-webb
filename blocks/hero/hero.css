@@ -16,6 +16,10 @@
   overflow: hidden;
 }
 
+.hero[data-section-link] {
+  cursor: pointer;
+}
+
 body.securbank-theme .hero {
   min-height: 400px;
 }
