@@ -1,7 +1,6 @@
-import { getMetadata } from '../../scripts/aem.js';
-import { isAuthorEnvironment, moveInstrumentation, normalizeAemPath } from '../../scripts/scripts.js';
+import { getMetadata, resolveAnchorValue } from '../../scripts/aem.js';
+import { moveInstrumentation, normalizeAemPath } from '../../scripts/scripts.js';
 import { readBlockConfig } from '../../scripts/aem.js';
-import { getSiteName, PATH_PREFIX } from '../../scripts/utils.js';
 
 /**
  *
@@ -13,13 +12,13 @@ export default function decorate(block) {
   const VERTICAL_ALIGNMENT_VALUES = ['top', 'middle', 'bottom'];
 
   /* Value from nth row (same approach as lines 39–46): row = :scope > div:nth-child(n), value from first cell */
-  const rowVal = (n, useTextContentForLink) => {
+  const rowVal = (n) => {
     const row = block.querySelector(`:scope > div:nth-child(${n})`);
     if (!row?.children?.length) return undefined;
     const col = row.children[1] ?? row.children[0];
     if (col?.querySelector?.('a')) {
       const as = [...col.querySelectorAll('a')];
-      return as.length === 1 ? (useTextContentForLink ? as[0].textContent?.trim() : as[0].href) : as.map((a) => (useTextContentForLink ? a.textContent?.trim() : a.href));
+      return as.length === 1 ? resolveAnchorValue(as[0]) : as.map(resolveAnchorValue);
     }
     return col?.textContent?.trim();
   };
@@ -138,7 +137,7 @@ export default function decorate(block) {
   }
 
   /* Section link: do not use when value is a hex color (UE may put Text Color in Link field) */
-  const sectionLinkRaw = (config.link ?? rowVal(13, true)) && String(config.link ?? rowVal(13, true)).trim();
+  const sectionLinkRaw = (config.link ?? rowVal(13)) && String(config.link ?? rowVal(13)).trim();
   if (sectionLinkRaw && isHexColor(sectionLinkRaw)) {
     delete block.dataset.sectionLink;
   } else if (sectionLinkRaw) {
