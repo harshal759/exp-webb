@@ -1,15 +1,15 @@
 {
   "mappings": [
-    "/content/exp-webb/language-masters/en:/",
-    "/content/exp-webb/language-masters/en/:/en/",
-    "/content/exp-webb/configuration:/.helix/config.json",
-    "/content/exp-webb/metadata:/metadata.json",
-    "/content/exp-webb/redirects:/redirects.json",
-    "/content/exp-webb/graphql:/graphql.json",
-    "/content/exp-webb/placeholders:/placeholders.json"
+    "/content/exp-news/language-masters/en:/",
+    "/content/exp-news/language-masters/en/:/en/",
+    "/content/exp-news/configuration:/.helix/config.json",
+    "/content/exp-news/metadata:/metadata.json",
+    "/content/exp-news/redirects:/redirects.json",
+    "/content/exp-news/graphql:/graphql.json",
+    "/content/exp-news/placeholders:/placeholders.json"
   ],
   "includes": [
-    "/content/exp-webb/",
-    "/content/dam/exp-webb/"
+    "/content/exp-news/",
+    "/content/dam/exp-news/"
   ]
 }
