@@ -143,16 +143,20 @@ export default function decorate(block) {
     delete block.dataset.sectionLink;
   } else if (sectionLinkRaw) {
     block.dataset.sectionLink = sectionLinkRaw;
-    block.addEventListener('click', async () => {
-      const siteName = await getSiteName();
-      const isAuthor = isAuthorEnvironment();
-      const defaultPath = `/content/${siteName}${PATH_PREFIX}`;
-      const sectionLink = sectionLinkRaw.replaceAll(defaultPath, '');
-      if(sectionLinkRaw.includes(defaultPath)){
-        window.location.href = isAuthor ? sectionLinkRaw + '.html' : sectionLink;
-      } else {
-        window.location.href = sectionLinkRaw;
+    block.addEventListener('click', () => {
+      // leave true external links (not pointing at /content/) untouched
+      if (/^https?:\/\//i.test(sectionLinkRaw)) {
+        try {
+          if (!new URL(sectionLinkRaw).pathname.startsWith('/content/')) {
+            window.location.href = sectionLinkRaw;
+            return;
+          }
+        } catch {
+          window.location.href = sectionLinkRaw;
+          return;
+        }
       }
+      window.location.href = normalizeAemPath(sectionLinkRaw);
     });
   }
 
