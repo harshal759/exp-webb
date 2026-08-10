@@ -1,5 +1,5 @@
 import { getMetadata } from '../../scripts/aem.js';
-import { isAuthorEnvironment, moveInstrumentation } from '../../scripts/scripts.js';
+import { isAuthorEnvironment, moveInstrumentation, normalizeAemPath } from '../../scripts/scripts.js';
 import { readBlockConfig } from '../../scripts/aem.js';
 import { getSiteName, PATH_PREFIX } from '../../scripts/utils.js';
 
