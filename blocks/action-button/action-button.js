@@ -29,20 +29,25 @@ export default function decorate(block) {
   const appendHtmlIfAuthor = (value) => {
     if (!value) return value;
     if (!isAuthorEnvironment()) return value;
+    if (/^https?:\/\//i.test(value)) {
+      try {
+        if (!new URL(value).pathname.startsWith('/content/')) return value; // external link — leave untouched
+      } catch {
+        return value;
+      }
+    }
     // insert .html before any query string/hash instead of appending to the very end
     const [pathname, suffix = ''] = value.match(/^([^?#]*)([?#].*)?$/).slice(1);
     return pathname.toLowerCase().endsWith('.html') ? value : `${pathname}.html${suffix}`;
   };
 
-  const rowLinkElement = block.querySelector(':scope > div:nth-child(1) a');
-  const rowLink = appendHtmlIfAuthor(rowLinkElement?.textContent?.trim() || '');
-  const rowLinkUrl = appendHtmlIfAuthor(rowLinkElement?.getAttribute('href')?.trim() || '');
+  const rowLinkElement = block.querySelector(':scope > div:nth-child(1) a') || block.querySelector('a[href]');
+  const rowLinkUrl = rowLinkElement ? appendHtmlIfAuthor(resolveAnchorValue(rowLinkElement)) : '';
   const rowLabel = normalizeRowValue(rowVal(2));
   const rowTitle = normalizeRowValue(rowVal(3));
   const rowStyle = normalizeRowValue(rowVal(4));
 
-  const linkEl = block.querySelector('a[href]');
-  const buttonLink = linkEl?.getAttribute('href')?.trim() || rowLinkUrl || '#';
+  const buttonLink = rowLinkUrl || '#';
 
   const buttonLabel = getTextFromSelector(block, '[data-aue-prop="label"]')
     || getTextFromSelector(block, '[data-aue-prop="title"]')
