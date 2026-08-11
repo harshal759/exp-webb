@@ -618,10 +618,22 @@ function decorateButtons(element) {
     a.title = a.title || a.textContent;
     if (isAuthor) {
       const href = a.getAttribute('href') || '';
+      let skip = false;
+      if (/^https?:\/\//i.test(href)) {
+        try {
+          const parsedHref = new URL(href);
+          // external/absolute URL (different origin or not a /content/ path) — leave untouched
+          skip = parsedHref.origin !== window.location.origin || !parsedHref.pathname.startsWith('/content/');
+        } catch {
+          skip = true;
+        }
+      }
       // author-mode requires .html, but the server can't resolve .html appended after a query string
-      const [pathname, suffix = ''] = href.match(/^([^?#]*)([?#].*)?$/).slice(1);
-      if (pathname && !pathname.toLowerCase().endsWith('.html')) {
-        a.setAttribute('href', `${pathname}.html${suffix}`);
+      if (!skip) {
+        const [pathname, suffix = ''] = href.match(/^([^?#]*)([?#].*)?$/).slice(1);
+        if (pathname && !pathname.toLowerCase().endsWith('.html')) {
+          a.setAttribute('href', `${pathname}.html${suffix}`);
+        }
       }
     }
     if (a.href !== a.textContent) {
