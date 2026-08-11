@@ -1,5 +1,6 @@
 import { div, a, span } from '../../scripts/dom-helpers.js';
 import { isAuthorEnvironment } from '../../scripts/scripts.js';
+import { resolveAnchorValue } from '../../scripts/aem.js';
 
 function getTextFromSelector(block, selector) {
   const el = block.querySelector(selector);
@@ -15,7 +16,7 @@ export default function decorate(block) {
     const col = row.children[1] ?? row.children[0];
     if (col?.querySelector?.('a')) {
       const as = [...col.querySelectorAll('a')];
-      return as.length === 1 ? as[0].href : as.map((a) => a.href);
+      return as.length === 1 ? resolveAnchorValue(as[0]) : as.map(resolveAnchorValue);
     }
     return col?.textContent?.trim();
   };
@@ -28,7 +29,9 @@ export default function decorate(block) {
   const appendHtmlIfAuthor = (value) => {
     if (!value) return value;
     if (!isAuthorEnvironment()) return value;
-    return value.toLowerCase().endsWith('.html') ? value : `${value}.html`;
+    // insert .html before any query string/hash instead of appending to the very end
+    const [pathname, suffix = ''] = value.match(/^([^?#]*)([?#].*)?$/).slice(1);
+    return pathname.toLowerCase().endsWith('.html') ? value : `${pathname}.html${suffix}`;
   };
 
   const rowLinkElement = block.querySelector(':scope > div:nth-child(1) a');
