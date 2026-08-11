@@ -613,8 +613,17 @@ function wrapTextNodes(block) {
  * @param {Element} element container element
  */
 function decorateButtons(element) {
+  const isAuthor = window?.location?.origin?.includes('author');
   element.querySelectorAll('a').forEach((a) => {
     a.title = a.title || a.textContent;
+    if (isAuthor) {
+      const href = a.getAttribute('href') || '';
+      // author-mode requires .html, but the server can't resolve .html appended after a query string
+      const [pathname, suffix = ''] = href.match(/^([^?#]*)([?#].*)?$/).slice(1);
+      if (pathname && !pathname.toLowerCase().endsWith('.html')) {
+        a.setAttribute('href', `${pathname}.html${suffix}`);
+      }
+    }
     if (a.href !== a.textContent) {
       const up = a.parentElement;
       const twoup = a.parentElement.parentElement;
